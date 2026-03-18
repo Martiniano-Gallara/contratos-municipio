@@ -1,0 +1,196 @@
+// Schema de Base de Datos - Sistema de Gestión de Contratos Municipales (SQLite Version)
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ===== USUARIOS Y ROLES =====
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String
+  password  String
+  role      String   @default("READONLY") // ADMIN, OPERATOR, READONLY
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  contractsCreated  Contract[]        @relation("CreatedBy")
+  contractsUpdated  Contract[]        @relation("UpdatedBy")
+  documents         Document[]
+  auditLogs         AuditLog[]
+  historyChanges    ContractHistory[]
+  rescissions       RescissionRecord[]
+
+  @@map("users")
+}
+
+// ===== CONTRATOS =====
+
+model Contract {
+  id          String           @id @default(cuid())
+  code        String           @unique
+  category    String           // SERVICIOS, ALQUILER, OBRA
+  status      String           @default("BORRADOR") // BORRADOR, ACTIVO, FINALIZADO, RESCINDIDO, VENCIDO
+  description String
+  observations String?
+
+  amount      Float
+  paymentMethod String?          // Ej: Por hora, 33L Combustible p/hora, etc.
+  isHourly    Boolean          @default(false)  // true = monto por hora
+  currency    String           @default("ARS") // ARS, USD, EUR
+
+  startDate   DateTime
+  endDate     DateTime
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+
+  // Ajuste por IPC
+  ipcEnabled        Boolean   @default(false)
+  ipcPeriodMonths   Int       @default(3)   // Cada cuántos meses se ajusta (3, 6, 12)
+  ipcLastAdjustment DateTime? // Fecha del último ajuste
+  ipcNextAdjustment DateTime? // Fecha del próximo ajuste (calculada)
+
+  isDeleted   Boolean          @default(false)
+  deletedAt   DateTime?
+
+  providerId  String
+  provider    Provider         @relation(fields: [providerId], references: [id])
+  createdById String
+  createdBy   User             @relation("CreatedBy", fields: [createdById], references: [id])
+  updatedById String?
+  updatedBy   User?            @relation("UpdatedBy", fields: [updatedById], references: [id])
+
+  documents   Document[]
+  history     ContractHistory[]
+  rescission  RescissionRecord?
+
+  @@index([status])
+  @@index([category])
+  @@index([providerId])
+  @@index([startDate])
+  @@index([endDate])
+  @@index([isDeleted])
+  @@map("contracts")
+}
+
+// ===== PROVEEDORES =====
+
+model Provider {
+  id         String   @id @default(cuid())
+  name       String
+  tradeName  String?
+  dniCuit    String   @unique
+  sector     String?
+  phone      String?
+  email      String?
+  address    String?
+  active     Boolean  @default(true)
+  notes      String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  contracts  Contract[]
+
+  @@index([name])
+  @@index([dniCuit])
+  @@index([active])
+  @@map("providers")
+}
+
+// ===== DOCUMENTOS =====
+
+model Document {
+  id         String       @id @default(cuid())
+  name       String
+  type       String       @default("CONTRATO_ORIGINAL")
+  filePath   String
+  fileSize   Int?
+  mimeType   String       @default("application/pdf")
+  createdAt  DateTime     @default(now())
+
+  contractId String
+  contract   Contract     @relation(fields: [contractId], references: [id])
+  uploadedById String
+  uploadedBy User         @relation(fields: [uploadedById], references: [id])
+
+  @@index([contractId])
+  @@map("documents")
+}
+
+// ===== HISTORIAL DE CONTRATOS =====
+
+model ContractHistory {
+  id         String   @id @default(cuid())
+  field      String
+  oldValue   String?
+  newValue   String?
+  createdAt  DateTime @default(now())
+
+  contractId String
+  contract   Contract @relation(fields: [contractId], references: [id])
+  changedById String
+  changedBy  User     @relation(fields: [changedById], references: [id])
+
+  @@index([contractId])
+  @@index([createdAt])
+  @@map("contract_history")
+}
+
+// ===== RESCISIÓN =====
+
+model RescissionRecord {
+  id            String   @id @default(cuid())
+  reason        String
+  justification String
+  date          DateTime
+  createdAt     DateTime @default(now())
+
+  contractId    String   @unique
+  contract      Contract @relation(fields: [contractId], references: [id])
+  userId        String
+  user          User     @relation(fields: [userId], references: [id])
+
+  @@map("rescission_records")
+}
+
+// ===== AUDITORÍA =====
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  action    String
+  entity    String
+  entityId  String?
+  oldValue  String?
+  newValue  String?
+  ipAddress String?
+  createdAt DateTime @default(now())
+
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@index([entity, entityId])
+  @@index([userId])
+  @@index([createdAt])
+  @@map("audit_logs")
+}
+
+// ===== TEXTOS PREDEFINIDOS =====
+
+model TemplateText {
+  id       String           @id @default(cuid())
+  category String
+  name     String
+  content  String
+  active   Boolean          @default(true)
+  createdAt DateTime        @default(now())
+
+  @@index([category])
+  @@map("template_texts")
+}
