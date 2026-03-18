@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { FileType, Plus, Trash2, Edit } from 'lucide-react';
+import { FileType, Plus } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import { hasPermission } from '@/lib/permissions';
 import type { Role } from '@/lib/permissions';

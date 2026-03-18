@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { FolderOpen, FileText, Download, Upload } from 'lucide-react';
+import { FolderOpen, FileText, Download } from 'lucide-react';
 
 interface Doc {
   id: string;

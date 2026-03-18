@@ -1,10 +1,10 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import {
-  Plus, Search, Filter, Eye, Edit, Download, Printer, Trash2,
+  Plus, Search, Filter, Eye, Edit, Printer, Trash2,
   ChevronLeft, ChevronRight, FileText, X, AlertTriangle, Scissors, TrendingDown,
 } from 'lucide-react';
 import { hasPermission } from '@/lib/permissions';
@@ -66,7 +66,7 @@ function formatDate(date: string) {
   return new Date(date).toLocaleDateString('es-AR');
 }
 
-export default function ContratosPage() {
+function ContratosContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { data: session } = useSession();
@@ -476,5 +476,17 @@ export default function ContratosPage() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function ContratosPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+      </div>
+    }>
+      <ContratosContent />
+    </Suspense>
   );
 }

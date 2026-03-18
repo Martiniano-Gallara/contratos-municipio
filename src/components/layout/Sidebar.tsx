@@ -11,12 +11,10 @@ import {
   History,
   FolderOpen,
   BarChart3,
-  Shield,
   Settings,
   LogOut,
   ChevronLeft,
   Menu,
-  FileType,
   User,
   TrendingDown,
 } from 'lucide-react';

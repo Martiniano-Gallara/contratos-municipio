@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { History, FileText, Calendar, DollarSign, Eye } from 'lucide-react';
+import { History, FileText, Eye } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
 interface HistoryContract {

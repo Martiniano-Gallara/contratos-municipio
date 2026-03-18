@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
+import Link from 'next/link';
 import {
   FileText,
   AlertTriangle,
@@ -186,9 +187,9 @@ export default function DashboardPage() {
               {stats.expiringContracts} contrato{stats.expiringContracts !== 1 ? 's' : ''} por vencer en los próximos 30 días
             </p>
           </div>
-          <a href="/dashboard/contratos?status=ACTIVO&expiring=true" className="text-sm font-medium text-amber-700 hover:text-amber-900 flex items-center gap-1">
+          <Link href="/dashboard/contratos?status=ACTIVO&expiring=true" className="text-sm font-medium text-amber-700 hover:text-amber-900 flex items-center gap-1">
             Ver <ArrowRight className="w-3 h-3" />
-          </a>
+          </Link>
         </div>
       )}
 
@@ -204,9 +205,9 @@ export default function DashboardPage() {
               El monto de estos contratos debe actualizarse según el índice IPC
             </p>
           </div>
-          <a href="#ipc-section" className="text-sm font-medium text-violet-700 hover:text-violet-900 flex items-center gap-1">
+          <Link href="#ipc-section" className="text-sm font-medium text-violet-700 hover:text-violet-900 flex items-center gap-1">
             Ver detalle <ArrowRight className="w-3 h-3" />
-          </a>
+          </Link>
         </div>
       )}
 
@@ -280,7 +281,7 @@ export default function DashboardPage() {
             {data.ipcPendingDetails.map((contract) => {
               const overdueDays = contract.ipcNextAdjustment ? daysSince(contract.ipcNextAdjustment) : 0;
               return (
-                <a
+                <Link
                   key={contract.id}
                   href={`/dashboard/contratos/${contract.id}`}
                   className="flex items-center justify-between p-4 rounded-lg border border-violet-100 bg-violet-50/30 hover:bg-violet-50 transition-colors group"
@@ -314,7 +315,7 @@ export default function DashboardPage() {
                       Debía ajustarse el {contract.ipcNextAdjustment ? formatDate(contract.ipcNextAdjustment) : '-'}
                     </span>
                   </div>
-                </a>
+                </Link>
               );
             })}
           </div>
@@ -368,7 +369,7 @@ export default function DashboardPage() {
               {data.expiringDetails.map((contract) => {
                 const days = daysUntil(contract.endDate);
                 return (
-                  <a
+                  <Link
                     key={contract.id}
                     href={`/dashboard/contratos/${contract.id}`}
                     className="flex items-center justify-between p-3 rounded-lg hover:bg-slate-50 transition-colors group"
@@ -384,7 +385,7 @@ export default function DashboardPage() {
                     }`}>
                       {days} día{days !== 1 ? 's' : ''}
                     </div>
-                  </a>
+                  </Link>
                 );
               })}
             </div>
@@ -454,5 +455,5 @@ function StatCard({
     </div>
   );
 
-  return href ? <a href={href}>{Card}</a> : Card;
+  return href ? <Link href={href}>{Card}</Link> : Card;
 }

@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { BarChart3, PieChart, FileText, ArrowDownToLine, Calendar, Download } from 'lucide-react';
+import { BarChart3, PieChart, Download } from 'lucide-react';
 import * as XLSX from 'xlsx';
 
 interface SummaryData {
@@ -11,7 +11,7 @@ interface SummaryData {
   totals: { count: number; totalAmount: number };
 }
 
-const statusLabels: Record<string, string> = { ACTIVO: 'Activo', BORRADOR: 'Borrador', FINALIZADO: 'Finalizado', RESCINDIDO: 'Rescindido', VENCIDO: 'Vencido' };
+
 const categoryLabels: Record<string, string> = { SERVICIOS: 'Servicios', ALQUILER: 'Alquiler', OBRA: 'Obra' };
 
 export default function ReportesPage() {

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
-import { Shield, Search, Calendar, User, Activity, FileText } from 'lucide-react';
+import { Shield } from 'lucide-react';
 
 interface AuditLog {
   id: string;
@@ -70,7 +70,10 @@ export default function AuditoriaPage() {
     }
   };
 
-  useEffect(() => { fetchLogs(); }, []);
+  useEffect(() => { 
+    fetchLogs(); 
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleFilterChange = (e: React.ChangeEvent<HTMLSelectElement | HTMLInputElement>) => {
     setFilters(f => ({ ...f, [e.target.name]: e.target.value }));

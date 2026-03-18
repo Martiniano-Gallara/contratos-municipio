@@ -3,7 +3,7 @@
 import { useEffect, useState, use } from 'react';
 import { useRouter } from 'next/navigation';
 import {
-  ArrowLeft, Edit, Printer, Download, Scissors, FileText,
+  ArrowLeft, Edit, Printer, Download, FileText,
   Calendar, DollarSign, User, Building, Clock, AlertCircle, Upload,
 } from 'lucide-react';
 
